@@ -4,7 +4,12 @@
   "description": "An AI agent with advanced tool-calling capabilities, featuring a flexible toolsets system for organizing and managing tools.",
   "private": true,
   "scripts": {
-    "postinstall": "echo '✅ Browser tools ready. Run: python run_agent.py --help'"
+    "postinstall": "echo '✅ Browser tools ready. Run: python run_agent.py --help'",
+    "build": "pnpm run build:web && pnpm run build:server",
+    "build:web": "pnpm --dir web install && pnpm --dir web run build",
+    "build:server": "pnpm --dir server install",
+    "start": "node server/index.js",
+    "dev:all": "concurrently -k -n web,stack -c magenta,cyan \"cross-env HERMES_DASHBOARD_URL=http://127.0.0.1:3080 pnpm --dir web dev\" \"cross-env PORT=3080 HERMES_INTERNAL_PORT=19119 node server/index.js\""
   },
   "repository": {
     "type": "git",
@@ -18,6 +23,10 @@
   "dependencies": {
     "@askjo/camofox-browser": "^1.5.2",
     "agent-browser": "^0.26.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3"
   },
   "overrides": {
     "lodash": "4.18.1"

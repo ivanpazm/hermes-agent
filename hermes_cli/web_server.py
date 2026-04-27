@@ -69,13 +69,20 @@ app = FastAPI(title="Hermes Agent", version=__version__)
 # Session token for protecting sensitive endpoints (reveal).
 # Generated fresh on every server start — dies when the process exits.
 # Injected into the SPA HTML so only the legitimate web UI can use it.
+# If HERMES_DASHBOARD_SESSION_TOKEN is set (e.g. Render + Express front), the
+# same value must be injected into index.html by that front.
 # ---------------------------------------------------------------------------
-_SESSION_TOKEN = secrets.token_urlsafe(32)
+_sess_env = (os.environ.get("HERMES_DASHBOARD_SESSION_TOKEN") or "").strip()
+_SESSION_TOKEN = _sess_env if _sess_env else secrets.token_urlsafe(32)
 _SESSION_HEADER_NAME = "X-Hermes-Session-Token"
 
 # In-browser Chat tab (/chat, /api/pty, …).  Off unless ``hermes dashboard --tui``
 # or HERMES_DASHBOARD_TUI=1.  Set from :func:`start_server`.
-_DASHBOARD_EMBEDDED_CHAT_ENABLED = False
+_DASHBOARD_EMBEDDED_CHAT_ENABLED = (
+    os.environ.get("HERMES_DASHBOARD_TUI") == "1"
+    or os.environ.get("HERMES_DASHBOARD_EMBEDDED_CHAT", "").lower()
+    in ("1", "true", "yes")
+)
 
 # Simple rate limiter for the reveal endpoint
 _reveal_timestamps: List[float] = []

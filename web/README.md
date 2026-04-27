@@ -28,7 +28,7 @@ The Vite dev server proxies `/api` requests to `http://127.0.0.1:9119` (the Fast
 npm run build
 ```
 
-This outputs to `../hermes_cli/web_dist/`, which the FastAPI server serves as a static SPA. The built assets are included in the Python package via `pyproject.toml` package-data.
+This outputs to `dist/` under `web/`, then `postbuild` copies to `hermes_cli/web_dist/` for the Python package (`pyproject.toml` package-data) and for `hermes dashboard`.
 
 ## Structure
 

@@ -5095,12 +5095,12 @@ def _web_ui_build_needed(web_dir: Path) -> bool:
     """Return True if the web UI dist is missing or stale.
 
     Mirrors the staleness logic used by ``_tui_build_needed()`` for the TUI.
-    The Vite build outputs to ``hermes_cli/web_dist/`` (per vite.config.ts
-    outDir: "../hermes_cli/web_dist"), NOT to ``web/dist/``.  Uses the Vite
-    manifest as the sentinel because it is written last and therefore has the
-    newest mtime of any build output.
+    The Vite build outputs to ``web/dist/`` (vite.config.ts outDir: ``dist``);
+    ``postbuild`` copies to ``hermes_cli/web_dist/`` for setuptools package-data.
+    Uses the Vite manifest as the sentinel because it is written last and
+    therefore has the newest mtime of any build output.
     """
-    dist_dir = web_dir.parent / "hermes_cli" / "web_dist"
+    dist_dir = web_dir / "dist"
     sentinel = dist_dir / ".vite" / "manifest.json"
     if not sentinel.exists():
         sentinel = dist_dir / "index.html"
@@ -7574,7 +7574,12 @@ def cmd_dashboard(args):
 
     from hermes_cli.web_server import start_server
 
-    embedded_chat = args.tui or os.environ.get("HERMES_DASHBOARD_TUI") == "1"
+    embedded_chat = (
+        args.tui
+        or os.environ.get("HERMES_DASHBOARD_TUI") == "1"
+        or os.environ.get("HERMES_DASHBOARD_EMBEDDED_CHAT", "").lower()
+        in ("1", "true", "yes")
+    )
     start_server(
         host=args.host,
         port=args.port,

@@ -1,0 +1,22 @@
+# Blueprint Render: Web Service con Node + Python (uv) para el dashboard FastAPI.
+# Documentación: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: hermes-agent
+    runtime: node
+    plan: free
+    buildCommand: |
+      set -e
+      curl -LsSf https://astral.sh/uv/install.sh | sh
+      export PATH="$HOME/.local/bin:$PATH"
+      uv sync --extra web --extra pty --no-dev
+      corepack enable
+      corepack prepare pnpm@10 --activate
+      pnpm install
+      pnpm run build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production

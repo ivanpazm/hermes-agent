@@ -9,6 +9,7 @@
     "prebuild": "npm run sync-assets",
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "postbuild": "node ../scripts/sync-web-dist.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
